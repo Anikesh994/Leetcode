@@ -2,12 +2,16 @@ class Solution {
 public:
     bool asteroidsDestroyed(int mass, vector<int>& asteroids) {
         int n =asteroids.size();
-        sort(asteroids.begin() ,asteroids.end());
+        priority_queue<int,vector<int> ,greater<int>>pq;
         long long ans=mass;
         for(int i=0;i<n;i++){
-            if(ans < asteroids[i]) return false;
+            pq.push(asteroids[i]);
+        }
+        for(int i=0;i<n;i++){
+            if(ans < pq.top()) return false;
             else{
-                ans+=asteroids[i];
+                ans+=pq.top();
+                pq.pop();
             }
         }
         return true;
