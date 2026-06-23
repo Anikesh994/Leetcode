@@ -1,46 +1,40 @@
 class Solution {
-    vector<vector<string>> ans;
 
-    bool ispal(string s) {
-        int l = 0, r = s.size() - 1;
-
-        while (l < r) {
-            if (s[l] != s[r]) return false;
-            l++;
-            r--;
-        }
-
-        return true;
+void solve(int i ,string s ,vector<vector<bool>>&ispal,vector<vector<string>>&ans,vector<string>&temp ){
+    if(i==s.size()){
+        ans.push_back(temp);
+        return ;
     }
 
-    void solve(int i, string s, string curr,
-               vector<string>& temp) {
-
-        int n = s.size();
-
-        if (i == n) {
-            if (curr.empty())
-                ans.push_back(temp);
-            return;
-        }
-
-        curr += s[i];
-
-        // TAKE
-        if (ispal(curr)) {
-            temp.push_back(curr);
-            solve(i + 1, s, "", temp);
+    for(int j=i;j<s.size();j++){
+        if(ispal[i][j]){
+            temp.push_back(s.substr(i ,j-i+1));
+            solve(j+1 ,s,ispal ,ans,temp);
             temp.pop_back();
         }
-
-        // NOT TAKE
-        solve(i + 1, s, curr, temp);
     }
+}
+
+
 
 public:
     vector<vector<string>> partition(string s) {
-        vector<string> temp;
-        solve(0, s, "", temp);
+        int n =s.size();
+        vector<vector<bool>>ispal(n,vector<bool>(n,false));
+        for(int i=n-1;i>=0;i--){
+            for(int j=i ;j<n;j++){
+                if(s[i]==s[j]){
+                    if(j-i<=1) ispal[i][j]=true;
+                    else{
+                    ispal[i][j] =ispal[i+1][j-1];
+                    } 
+                }
+                
+            }
+        }
+        vector<vector<string>>ans;
+        vector<string>temp;
+        solve(0,s,ispal,ans,temp);
         return ans;
     }
 };
