@@ -17,27 +17,25 @@ public:
 */
 
 class Solution {
+
+void solve(Node * root){
+    if(root == nullptr || root->left == nullptr) return ;
+
+    root->left->next = root->right;
+    if(root->next != nullptr){
+        root->right->next =root->next->left;
+    }
+
+    solve(root->left);
+    solve(root->right);
+}
+
+
+
+
 public:
     Node* connect(Node* root) {
-        queue<Node *>qt;
-        if(root==nullptr ) return root;
-        qt.push(root);
-        while(!qt.empty()){
-            int x=qt.size();
-            for(int i=0;i<x;i++){
-                auto it  =qt.front();
-                qt.pop();
-                if(i<x-1){
-                    it->next = qt.front();
-                }
-                if(it->left !=nullptr){
-                    qt.push(it->left);
-                }
-                if(it->right !=nullptr){
-                    qt.push(it->right);
-                }
-            }
-        }
+        solve(root);
         return root;
     }
 };
