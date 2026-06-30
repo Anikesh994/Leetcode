@@ -2,34 +2,23 @@ class Solution {
 public:
     string longestPrefix(string s) {
         int n =s.size();
-        vector<int>presum(n,0);
-        int i=1;
-        int length=0;
-        int ans=0;
-        while(i<s.size()){
-            if(s[i]==s[length]){
-                presum[i]=length+1;
-                length++;
-                
-                i++;
+        long long forward =0;
+        long long backward =0;
+        long long base =27;
+        long long mod =1e9+7;
+        long long pow=1;
+        int j=0;
+        for(int i=0;i<n-1;i++){
+            int val1 = (s[i]-'a');
+            int val2 = (s[n-i-1]-'a');
+            forward =(1LL*forward*base + val1)%mod;
+            backward = (backward + (1LL*pow * val2)%mod)%mod;
+            pow =(pow*base)%mod;
+            if( forward==backward){
+                j=i+1;
             }
-            else{
-                if(length!=0){
-                    length =presum[length-1];
-                }
-                else{
-                    presum[i]=0;
-                    i++;
-                }
-            }
+
         }
-        ans =presum[n-1];
-        string temp="";
-        for(int i=n-ans;i<n;i++){
-            temp+=s[i];
-        }
-        
-        return temp;
- 
+        return s.substr(0,j);
     }
 };
