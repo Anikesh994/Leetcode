@@ -1,44 +1,44 @@
 class Solution {
+public:
+    bool findSafeWalk(vector<vector<int>>& grid, int health) {
+        int m = grid.size(), n = grid[0].size();
 
-vector<vector<int>>dir = {{-1,0},{1,0},{0,-1},{0,1}};
+        vector<vector<int>> dist(m, vector<int>(n, INT_MAX));
+        deque<pair<int, int>> dq;
 
+        dist[0][0] = grid[0][0];
+        dq.push_front({0, 0});
 
-bool solve(vector<vector<int>>& grid, int health){
-    if(health<=0) return false;
-    priority_queue<vector<int> , vector<vector<int>> >pq;
-    int x= health;
-    vector<vector<int>>vis(grid.size(),vector<int>(grid[0].size(),-1));
-    int startHealth = health - grid[0][0];
-    if(startHealth <= 0) return false;
-    pq.push({startHealth, 0, 0});
-    while(!pq.empty()){
-        auto it = pq.top();
-        pq.pop();
-        if(vis[it[1]][it[2]] != -1) continue;
-        vis[it[1]][it[2]] = 0;
+        int dx[] = {-1, 1, 0, 0};
+        int dy[] = {0, 0, -1, 1};
 
-        if(it[1]==grid.size()-1 && it[2]==grid[0].size()-1) return true;
-        for(auto it1 : dir){
-            int nr = it[1] + it1[0];
-            int nc = it[2] + it1[1];
+        while (!dq.empty()) {
+            auto [x, y] = dq.front();
+            dq.pop_front();
 
-            if(nr>=0 && nc >=0 && nr < grid.size() && nc< grid[0].size() && vis[nr][nc]==-1){
-                int newHealth = it[0] - grid[nr][nc];
-                if(newHealth > 0){
-                    pq.push({newHealth, nr, nc});
+            if (x == m - 1 && y == n - 1)
+                return dist[x][y] < health;
+
+            for (int k = 0; k < 4; k++) {
+                int nx = x + dx[k];
+                int ny = y + dy[k];
+
+                if (nx < 0 || nx >= m || ny < 0 || ny >= n)
+                    continue;
+
+                int w = grid[nx][ny];
+
+                if (dist[x][y] + w < dist[nx][ny]) {
+                    dist[nx][ny] = dist[x][y] + w;
+
+                    if (w == 0)
+                        dq.push_front({nx, ny});
+                    else
+                        dq.push_back({nx, ny});
                 }
-                
             }
         }
 
-    }
-    return false;
-}
-
-
-
-public:
-    bool findSafeWalk(vector<vector<int>>& grid, int health) {
-        return solve(grid,health);
+        return dist[m - 1][n - 1] < health;
     }
 };
