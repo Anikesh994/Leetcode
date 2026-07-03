@@ -10,7 +10,7 @@ bool check(int mid ,vector<vector<pair<int,int>>>&adj ,long long k){
         auto it = pq.top();
         pq.pop();
         if(it.second == adj.size()-1) return true;
-        if(it.first > vis[it.second]) continue;
+        if(it.first != vis[it.second]) continue;
         
         for(auto it1 : adj[it.second]){
             int x= it.first + it1.second;
@@ -35,7 +35,8 @@ public:
             low = min(low,edges[i][2]);
             high = max(high,edges[i][2]);
         }
-
+        if(high ==INT_MAX) return 0;
+        
         int ans=-1;
         while(low<=high){
             int mid =(low+high)/2;
