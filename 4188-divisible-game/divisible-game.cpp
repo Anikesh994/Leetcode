@@ -1,75 +1,52 @@
 class Solution {
-private:
-    const int mod=1e9 +7;
-    vector<bool>prime;
-    vector<int>spf;
-    void sieve(){
-        prime.resize(1000002,true);
-        spf.resize(1000002);
-        prime[1]=false;
-        spf[1]=1;
-        for(long long i=2;i<=1000000;i++){
-            if(prime[i]){
-                spf[i]=i;
-                for(long long j=i*i;j<=1000000;j+=i){
-                    prime[j]=false;
-                    if(spf[j]==0){
-                        spf[j]=i;
-                    }
-                }
-            }
-        }
-    }
 public:
+    int MOD = 1e9 + 7;
 
     int divisibleGame(vector<int>& nums) {
-        sieve();
-        int n=nums.size();
-        bool f1=true;
-        for(int i=0;i<n;i++){
-            if(nums[i]!=1){
-                f1=false;
-                break;
-            }
-        }
-        if(f1){
-            return mod-2;
-        }
-        vector<int>pref(n+1);
-        for(int i=0;i<n;i++){
-            pref[i+1]=pref[i]+nums[i];
-        }
-        long long mx=-1e9;
-        long long mn=1e9;
+        unordered_set<int> st;
 
-        set<int>chck;
-        for(int i=0;i<n;i++){
-            int w=nums[i];
-            while(w>1){
-                int temp=spf[w];
-                chck.insert(temp);
-                while(w%temp==0){
-                    w/=temp;
+        // Collect all candidate divisors (>1)
+        for (int x : nums) {
+            for (int d = 2; 1LL * d * d <= x; d++) {
+                if (x % d == 0) {
+                    st.insert(d);
+                    st.insert(x / d);
+                }
+            }
+            if (x > 1)
+                st.insert(x);
+        }
+
+        if (st.empty())
+            st.insert(2);
+
+        vector<int> divs(st.begin(), st.end());
+        sort(divs.begin(), divs.end());
+
+        long long bestDif = LLONG_MIN;
+        int bestK = 2;
+
+        for (int k : divs) {
+            long long cur = LLONG_MIN;
+
+            for (int x : nums) {
+                long long val = (x % k == 0) ? x : -1LL * x;
+
+                if (cur == LLONG_MIN)
+                    cur = val;
+                else
+                    cur = max(val, cur + val);
+
+                if (cur > bestDif || (cur == bestDif && k < bestK)) {
+                    bestDif = cur;
+                    bestK = k;
                 }
             }
         }
 
-        for(auto &x:chck){
-            long long curr=0;
-            long long best=-1e9;
-            for(int i=0;i<n;i++){
-                long long dum=nums[i];
-                if(nums[i]%x!=0) dum*=-1;
-                curr+=dum;
-                curr=max(curr,dum);
-                best=max(best,curr);
-            }
-            // cout<<x<<' '<<best<<endl;
-            if(best>mx){
-                mx=best;
-                mn=x;
-            }
-        }
-        return (mx*mn + mod)%mod;
+        long long ans = ((bestDif % MOD) + MOD) % MOD;
+        ans = (ans * bestK) % MOD;
+
+        return (int)ans;
     }
 };
