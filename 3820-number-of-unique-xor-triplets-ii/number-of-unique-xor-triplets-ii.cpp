@@ -1,39 +1,28 @@
 class Solution {
 public:
     int uniqueXorTriplets(vector<int>& nums) {
-        const int MAX = 2048;
-
-        bool present[MAX] = {};
-        bool pairXor[MAX] = {};
-        bool result[MAX] = {};
-
-        for (int x : nums)
-            present[x] = true;
-
-        // All possible a ^ b
-        for (int a = 1; a < MAX; a++) {
-            if (!present[a]) continue;
-
-            for (int b = 1; b < MAX; b++) {
-                if (present[b])
-                    pairXor[a ^ b] = true;
+        unordered_map<int,int>um1;
+        unordered_map<int,int>um2;
+        vector<int>temp;
+        for(auto it : nums){
+            if(!um1.count(it)){
+                um1[it]++;
+                temp.push_back(it);
+            }
+        }
+        for(auto it : temp){
+            for(auto it1 : temp){
+                int x=it^it1; 
+                um2[x]++;
             }
         }
 
-        // All possible (a ^ b) ^ c
-        for (int x = 0; x < MAX; x++) {
-            if (!pairXor[x]) continue;
-
-            for (int c = 1; c < MAX; c++) {
-                if (present[c])
-                    result[x ^ c] = true;
+        for(auto it : um2){
+            for(int i=0;i<temp.size();i++){
+                int x=it.first^temp[i]; 
+                um1[x]++;
             }
         }
-
-        int count = 0;
-        for (bool x : result)
-            count += x;
-
-        return count;
+        return um1.size();
     }
 };
